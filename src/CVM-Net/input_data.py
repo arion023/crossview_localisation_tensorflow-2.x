@@ -5,7 +5,7 @@ import numpy as np
 
 class InputData:
 
-    img_root = '../Data/CVUSA/'
+    img_root = "D:/datasets/CVUSA/CVPR_subset/CVPR_subset/"
 
 
     def __init__(self):

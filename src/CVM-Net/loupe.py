@@ -14,7 +14,7 @@
 
 """ Learnable mOdUle for Pooling fEatures (LOUPE)
 Contains a collection of models (NetVLAD, NetRVLAD, NetFV and Soft-DBoW)
-which enables pooling of a list of features into a single compact 
+which enables pooling of a list of features into a single compact
 representation.
 
 Reference:
@@ -24,8 +24,9 @@ Antoine Miech, Ivan Laptev, Josef Sivic
 
 """
 import math
-import tensorflow as tf
-import tensorflow.contrib.slim as slim
+
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 import numpy as np
 
 
@@ -68,17 +69,17 @@ class PoolingBaseModel(object):
         'batch_size' x 'number_of_activation'
         """
 
-        input_dim = input_layer.get_shape().as_list()[1] 
-        
+        input_dim = input_layer.get_shape().as_list()[1]
+
         gating_weights = tf.get_variable("gating_weights",
           [input_dim, input_dim],
           initializer = tf.random_normal_initializer(
           stddev=1 / math.sqrt(input_dim)))
-        
+
         gates = tf.matmul(input_layer, gating_weights)
- 
+
         if self.add_batch_norm:
-          gates = slim.batch_norm(
+          gates = tf.keras.layers.BatchNormalization(
               gates,
               center=True,
               scale=True,
@@ -132,11 +133,11 @@ class NetVLAD(PoolingBaseModel):
               [self.feature_size, self.cluster_size],
               initializer = tf.random_normal_initializer(
               stddev=1 / math.sqrt(self.feature_size)))
-       
+
         activation = tf.matmul(reshaped_input, cluster_weights)
-        
+
         if self.add_batch_norm:
-          activation = slim.batch_norm(
+          activation = tf.keras.layers.BatchNormalization(
               activation,
               center=True,
               scale=True,
@@ -148,7 +149,7 @@ class NetVLAD(PoolingBaseModel):
             initializer = tf.random_normal_initializer(
             stddev=1 / math.sqrt(self.feature_size)))
           activation += cluster_biases
-        
+
         activation = tf.nn.softmax(activation)
 
         activation = tf.reshape(activation,
@@ -160,11 +161,11 @@ class NetVLAD(PoolingBaseModel):
             [1,self.feature_size, self.cluster_size],
             initializer = tf.random_normal_initializer(
                 stddev=1 / math.sqrt(self.feature_size)))
-        
+
         a = tf.multiply(a_sum,cluster_weights2)
-        
+
         activation = tf.transpose(activation,perm=[0,2,1])
-        
+
         reshaped_input = tf.reshape(reshaped_input,[-1,
             self.max_samples, self.feature_size])
 
@@ -223,11 +224,11 @@ class NetRVLAD(PoolingBaseModel):
               [self.feature_size, self.cluster_size],
               initializer = tf.random_normal_initializer(
                   stddev=1 / math.sqrt(self.feature_size)))
-       
+
         activation = tf.matmul(reshaped_input, cluster_weights)
-        
+
         if self.add_batch_norm:
-          activation = slim.batch_norm(
+          activation = tf.keras.layers.BatchNormalization(
               activation,
               center=True,
               scale=True,
@@ -240,18 +241,18 @@ class NetRVLAD(PoolingBaseModel):
                 stddev=1 / math.sqrt(self.feature_size)))
           tf.summary.histogram("cluster_biases", cluster_biases)
           activation += cluster_biases
-        
+
         activation = tf.nn.softmax(activation)
 
         activation = tf.reshape(activation,
                 [-1, self.max_samples, self.cluster_size])
-       
+
         activation = tf.transpose(activation,perm=[0,2,1])
-        
+
         reshaped_input = tf.reshape(reshaped_input,[-1,
             self.max_samples, self.feature_size])
         vlad = tf.matmul(activation,reshaped_input)
-        
+
         vlad = tf.transpose(vlad,perm=[0,2,1])
         vlad = tf.nn.l2_normalize(vlad,1)
 
@@ -305,11 +306,11 @@ class SoftDBoW(PoolingBaseModel):
           [self.feature_size, self.cluster_size],
           initializer = tf.random_normal_initializer(
               stddev=1 / math.sqrt(self.feature_size)))
-        
+
         activation = tf.matmul(reshaped_input, cluster_weights)
-        
+
         if self.add_batch_norm:
-          activation = slim.batch_norm(
+          activation = tf.keras.layers.BatchNormalization(
               activation,
               center=True,
               scale=True,
@@ -334,12 +335,12 @@ class SoftDBoW(PoolingBaseModel):
           [self.cluster_size, self.output_dim],
           initializer=tf.random_normal_initializer(
               stddev=1 / math.sqrt(self.cluster_size)))
-           
+
         bof = tf.matmul(bof, hidden1_weights)
 
         if self.gating:
             bof = super(self.__class__, self).context_gating(bof)
-      
+
         return bof
 
 
@@ -377,19 +378,19 @@ class NetFV(PoolingBaseModel):
           [self.feature_size, self.cluster_size],
           initializer = tf.random_normal_initializer(
               stddev=1 / math.sqrt(self.feature_size)))
-     
+
         covar_weights = tf.get_variable("covar_weights",
           [self.feature_size, self.cluster_size],
           initializer = tf.random_normal_initializer(
               mean=1.0, stddev=1 /math.sqrt(self.feature_size)))
-      
+
         covar_weights = tf.square(covar_weights)
         eps = tf.constant([1e-6])
         covar_weights = tf.add(covar_weights,eps)
 
         activation = tf.matmul(reshaped_input, cluster_weights)
         if self.add_batch_norm:
-          activation = slim.batch_norm(
+          activation = tf.keras.layers.BatchNormalization(
               activation,
               center=True,
               scale=True,
@@ -401,7 +402,7 @@ class NetFV(PoolingBaseModel):
             initializer = tf.random_normal_initializer(
                 stddev=1 / math.sqrt(self.feature_size)))
           activation += cluster_biases
-        
+
         activation = tf.nn.softmax(activation)
 
         activation = tf.reshape(activation,
@@ -415,21 +416,21 @@ class NetFV(PoolingBaseModel):
                     stddev=1 / math.sqrt(self.feature_size)))
 
         a = tf.multiply(a_sum,cluster_weights2)
-        
+
         activation = tf.transpose(activation,perm=[0,2,1])
-        
+
         reshaped_input = tf.reshape(reshaped_input,
                 [-1,self.max_samples,self.feature_size])
         fv1 = tf.matmul(activation,reshaped_input)
-        
+
         fv1 = tf.transpose(fv1,perm=[0,2,1])
 
         # computing second order FV
-        a2 = tf.multiply(a_sum,tf.square(cluster_weights2)) 
+        a2 = tf.multiply(a_sum,tf.square(cluster_weights2))
 
-        b2 = tf.multiply(fv1,cluster_weights2) 
-        fv2 = tf.matmul(activation,tf.square(reshaped_input)) 
-     
+        b2 = tf.multiply(fv1,cluster_weights2)
+        fv2 = tf.matmul(activation,tf.square(reshaped_input))
+
         fv2 = tf.transpose(fv2,perm=[0,2,1])
         fv2 = tf.add_n([a2,fv2,tf.scalar_mul(-2,b2)])
 
@@ -437,29 +438,29 @@ class NetFV(PoolingBaseModel):
         fv2 = tf.subtract(fv2,a_sum)
 
         fv2 = tf.reshape(fv2,[-1,self.cluster_size*self.feature_size])
-      
+
         fv2 = tf.nn.l2_normalize(fv2,1)
         fv2 = tf.reshape(fv2,[-1,self.cluster_size*self.feature_size])
         fv2 = tf.nn.l2_normalize(fv2,1)
 
         fv1 = tf.subtract(fv1,a)
-        fv1 = tf.divide(fv1,covar_weights) 
+        fv1 = tf.divide(fv1,covar_weights)
 
         fv1 = tf.nn.l2_normalize(fv1,1)
         fv1 = tf.reshape(fv1,[-1,self.cluster_size*self.feature_size])
         fv1 = tf.nn.l2_normalize(fv1,1)
 
         fv = tf.concat([fv1,fv2],1)
- 
+
         hidden1_weights = tf.get_variable("hidden1_weights",
           [2*self.cluster_size*self.feature_size, self.output_dim],
           initializer=tf.random_normal_initializer(
               stddev=1 / math.sqrt(self.cluster_size)))
-           
+
         fv = tf.matmul(fv, hidden1_weights)
 
         if self.gating:
             fv = super(self.__class__, self).context_gating(fv)
- 
-        return fv 
+
+        return fv
 

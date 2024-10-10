@@ -1,4 +1,6 @@
-import tensorflow as tf
+
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 class VGG16:
@@ -17,10 +19,15 @@ class VGG16:
     def conv_layer(self, x, kernel_dim, input_dim, output_dim, trainable, activated,
                    name='layer_conv', activation_function=tf.nn.relu):
         with tf.variable_scope(name):
-            weight = tf.get_variable(name='weights', shape=[kernel_dim, kernel_dim, input_dim, output_dim],
-                                     trainable=trainable, initializer=tf.contrib.layers.xavier_initializer())
-            bias = tf.get_variable(name='biases', shape=[output_dim],
-                                   trainable=trainable, initializer=tf.contrib.layers.xavier_initializer())
+            initializer = tf.keras.initializers.glorot_uniform()  # Xavier Uniform initializer in TensorFlow 2.x
+
+            # Weights with GlorotUniform initializer
+            weight = tf.Variable(initializer(shape=[kernel_dim, kernel_dim, input_dim, output_dim]),
+                                name='weights', trainable=trainable)
+
+            # Biases with GlorotUniform initializer
+            bias = tf.Variable(initializer(shape=[output_dim]),
+                            name='biases', trainable=trainable)
 
             if activated:
                 out = activation_function(self.conv2d(x, weight) + bias)

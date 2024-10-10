@@ -3,7 +3,8 @@ import loupe as lp
 from siamese_fc import Siamese_FC
 from transnet_v2 import TransNet
 
-import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 

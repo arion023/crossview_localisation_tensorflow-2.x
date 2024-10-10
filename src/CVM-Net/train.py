@@ -1,15 +1,16 @@
 from cvm_net import cvm_net_I, cvm_net_II
 from input_data import InputData
 
-import tensorflow as tf
 import numpy as np
 import os
 
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 
 # --------------  configuration parameters  -------------- #
 # the type of network to be used: "CVM-NET-I" or "CVM-NET-II"
-network_type = 'CVM-NET-II'
+network_type = 'CVM-NET-I'
 
 batch_size = 12
 is_training = True
@@ -153,7 +154,7 @@ def train(start_epoch=1):
                     sess.run(train_step, feed_dict=feed_dict)
 
                 iter += 1
-            
+
             # ---------------------- validation ----------------------
             print('validate...')
             print('   compute global descriptors')

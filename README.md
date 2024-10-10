@@ -1,3 +1,15 @@
+# This is fork of repo, please refere to orgyinal repo.
+
+Updated the code for compatibility with TensorFlow 2.x.
+
+This was necessary because TensorFlow 1.x supports CUDA only up to version 10.x, which is not compatible with newer generation graphics cards.
+
+I am using tensorflow==2.10 in the requirements due to its support for Windows Native, but it should also work with newer versions of TensorFlow.
+
+Added also requirements, but this was is for conda env with python 3.9 and configured like this:
+
+`conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0`
+
 # CVM-Net: Cross-View Matching Network for Image-Based Ground-to-Aerial Geo-Localisation
 
 
@@ -14,10 +26,10 @@ The problem of localization on a geo-referenced aerial/satellite map given a que
 ### Experiment Dataset
 We use two existing dataset to do the experiments
 
-- CVUSA datset: a dataset in America, with pairs of ground-level images and satellite images. All ground-level images are panoramic images.  
+- CVUSA datset: a dataset in America, with pairs of ground-level images and satellite images. All ground-level images are panoramic images.
 	The dataset can be accessed from https://github.com/viibridges/crossnet
 
-- Vo and Hays' dataset: a dataset in America, with pairs of ground-level images and satellite images. All ground-level images are a crop of panoramic images.  
+- Vo and Hays' dataset: a dataset in America, with pairs of ground-level images and satellite images. All ground-level images are a crop of panoramic images.
 	The dataset can be accessed from https://github.com/lugiavn/gt-crossview
 
 
@@ -31,7 +43,7 @@ The top 1% recall accuracy
 
 
 ### Codes
-Our CVM-Net is implemented in Tensorflow + python. You can change the parameters in train.py to use different models to train and test the network. 
+Our CVM-Net is implemented in Tensorflow + python. You can change the parameters in train.py to use different models to train and test the network.
 
 *input_data.py* is used to read the data and prepared data for the network. It is coded for CVUSA dataset. You need to download the CVUSA dataset from their website and put them into directory /src/CVM-Net/Data/. Please go to *input_data.py* for the details. To use Vo and Hays' dataset, you need to generate your own train_list.txt or test_list.txt.
 
@@ -51,18 +63,18 @@ Please copy the model to \src\Model\CVM-Net-I\ or \src\Model\CVM-Net-II\ to let 
 We trained on a workstation with two NVIDIA 1080Ti GPUs. It took about 3 days.
 
 ### Publications
-This work is published in CVPR 2018.  
+This work is published in CVPR 2018.
 [CVM-Net: Cross-View Matching Network for Image-Based Ground-to-Aerial Geo-Localisation](http://openaccess.thecvf.com/content_cvpr_2018/papers/Hu_CVM-Net_Cross-View_Matching_CVPR_2018_paper.pdf)
 
-If you are interested in our work and use our code, we are pleased that you can cite the following publication:  
+If you are interested in our work and use our code, we are pleased that you can cite the following publication:
 *Sixing Hu, Mengdan Feng, Rang M. H. Nguyen, Gim Hee Lee. CVM-Net: Cross-View Matching Network for Image-Based Ground-to-Aerial Geo-Localization. In IEEE Conference on Computer Vision and Pattern Recognition (CVPR), June 2018.*
 
-@InProceedings{Hu_2018_CVPR,  
-author = {Hu, Sixing and Feng, Mengdan and Nguyen, Rang M. H. and Lee, Gim Hee},  
-title = {CVM-Net: Cross-View Matching Network for Image-Based Ground-to-Aerial Geo-Localization},  
-booktitle = {The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},  
-month = {June},  
-year = {2018}  
+@InProceedings{Hu_2018_CVPR,
+author = {Hu, Sixing and Feng, Mengdan and Nguyen, Rang M. H. and Lee, Gim Hee},
+title = {CVM-Net: Cross-View Matching Network for Image-Based Ground-to-Aerial Geo-Localization},
+booktitle = {The IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+month = {June},
+year = {2018}
 }
 
 
