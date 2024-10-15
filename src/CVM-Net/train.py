@@ -10,7 +10,7 @@ tf.disable_v2_behavior()
 
 # --------------  configuration parameters  -------------- #
 # the type of network to be used: "CVM-NET-I" or "CVM-NET-II"
-network_type = 'CVM-NET-I'
+network_type = 'CVM-NET-II'
 
 batch_size = 12
 is_training = True

@@ -2,3 +2,4 @@ __pycache__
 /src/Model
 /src/Data
 /src/Result
+/src/CVM-Net/playground.py
