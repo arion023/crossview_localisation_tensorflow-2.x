@@ -151,5 +151,5 @@ class InputData:
         return self.test_data_size
 
     def reset_scan(self):
-        self.__cur_test_idd = 0
+        self.__cur_test_id = 0
 
