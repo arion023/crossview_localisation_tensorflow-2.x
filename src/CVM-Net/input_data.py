@@ -5,10 +5,14 @@ import numpy as np
 
 class InputData:
 
-    img_root = "D:/datasets/CVUSA/CVPR_subset/"
+    def __init__(self, dataset="CVUSA"):
 
+        self.dataset=dataset
 
-    def __init__(self):
+        if self.dataset=="CVUSA":
+            self.img_root = "D:/datasets/CVUSA/CVPR_subset/"
+        elif self.dataset=="WAW":
+            self.img_root = "D:/datasets/Warsaw/"
 
         self.train_list = self.img_root + 'splits/train-19zl.csv'
         self.test_list = self.img_root + 'splits/val-19zl.csv'
@@ -64,6 +68,7 @@ class InputData:
             # satellite
             img = cv2.imread(self.img_root + self.id_test_list[img_idx][0])
             img = cv2.resize(img, (512, 512), interpolation=cv2.INTER_AREA)
+
             img = img.astype(np.float32)
             # img -= 100.0
             img[:, :, 0] -= 103.939  # Blue
@@ -73,6 +78,11 @@ class InputData:
 
             # ground
             img = cv2.imread(self.img_root + self.id_test_list[img_idx][1])
+
+            if self.dataset=="WAW":
+                img = img[ : , 400:-400 ]
+                img = cv2.resize(img, (1232, 224), interpolation=cv2.INTER_AREA)
+
             img = img.astype(np.float32)
             # img -= 100.0
             img[:, :, 0] -= 103.939  # Blue

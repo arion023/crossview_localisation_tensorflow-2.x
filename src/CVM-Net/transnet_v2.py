@@ -22,6 +22,7 @@ class TransNet:
     def conv_layer_batch(self, x, kernel_dim, in_dimen, out_dimen, trainable, name='conv', activation_fn=tf.nn.relu):
         with tf.variable_scope(name):
             weight = tf.get_variable(name='weights', shape=[kernel_dim, kernel_dim, in_dimen, out_dimen],
+
                                      trainable=trainable, initializer=tf.contrib.layers.xavier_initializer())
             bias = tf.get_variable(name='biases', shape=[out_dimen],
                                    trainable=trainable, initializer=tf.contrib.layers.xavier_initializer())

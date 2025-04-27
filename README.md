@@ -6,7 +6,7 @@ This was necessary because TensorFlow 1.x supports CUDA only up to version 10.x,
 
 I am using tensorflow==2.10 in the requirements due to its support for Windows Native, but it should also work with newer versions of TensorFlow.
 
-Added also requirements, but this was is for conda env with python 3.9 and configured like this:
+Added also requirements, but this is for conda env with python 3.9 configured like this:
 
 `conda install -c conda-forge cudatoolkit=11.2 cudnn=8.1.0`
 

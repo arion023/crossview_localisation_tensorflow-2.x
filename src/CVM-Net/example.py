@@ -13,7 +13,8 @@ tf.disable_v2_behavior()
 network_type = 'CVM-NET-I'
 
 # path to model.ckpt file
-load_model_path = ''
+load_model_path = "./Model/CVM-Net-I/CVM-Net-I_model/model.ckpt"
+# load_model_path = './Model/CVM-Net-I/10/model.ckpt'
 
 is_training = False
 
@@ -28,18 +29,29 @@ def validate(grd_descriptor, sat_descriptor):
     data_amount = 0.0
     dist_array = 2 - 2 * np.matmul(sat_descriptor, np.transpose(grd_descriptor))
     top1_percent = int(dist_array.shape[0] * 0.01) + 1
+    print("top1_percent", top1_percent)
+    sorted_idx_by_distance = []
     for i in range(dist_array.shape[0]):
+
+        sorted_idx_by_distance.append(np.argsort(dist_array[:, i]))
+
         gt_dist = dist_array[i, i]
         prediction = np.sum(dist_array[:, i] < gt_dist)
         if prediction < top1_percent:
+            print("photo quessed for ", i, " distance: ", gt_dist)
+            print("min value for photo: ", min(dist_array[:, i]), " for index ", dist_array[:, i].argmin())
             accuracy += 1.0
         data_amount += 1.0
     accuracy /= data_amount
 
+    tmp = np.array(sorted_idx_by_distance)
+    np.savetxt('./Result/sorted_img_idx_by_distances.csv', tmp, fmt="%d", delimiter=',')
+    np.savetxt('./Result/distances.csv', dist_array, fmt="%d", delimiter=',')
+
     return accuracy
 
 # import data
-input_data = InputData()
+input_data = InputData(dataset="CVUSA")
 
 # define placeholders
 sat_x = tf.placeholder(tf.float32, [None, 512, 512, 3], name='sat_x')
